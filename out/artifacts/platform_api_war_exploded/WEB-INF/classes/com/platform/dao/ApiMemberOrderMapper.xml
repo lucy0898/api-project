@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiMemberOrderMapper">
+
+    <resultMap type="com.platform.entity.MemberOrderVo" id="memberOrderMap">
+        <result property="id" column="id"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="userId" column="user_id"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="actualPrice" column="actual_price"/>
+        <result property="payStatus" column="pay_status"/>
+        <result property="autoPay" column="auto_pay"/>
+        <result property="addTime" column="add_time"/>
+        <result property="payTime" column="pay_time"/>
+        <result property="payId" column="pay_id"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="cardId" column="member_card_id"/>
+    </resultMap>
+
+	<select id="queryObject" resultMap="memberOrderMap">
+		select
+			`id`,
+			`order_no`,
+			`user_id`,
+			`order_status`,
+			`actual_price`,
+			`pay_status`,
+			`auto_pay`,
+			`add_time`,
+			`pay_time`,
+			`pay_id`,
+			`update_time`,
+			`member_card_id`
+		from nideshop_member_order
+		where id = #{id}
+	</select>
+
+	<select id="queryList" resultType="com.platform.entity.MemberOrderVo">
+		select
+    		`id`,
+    		`order_no`,
+    		`user_id`,
+    		`order_status`,
+    		`actual_price`,
+    		`pay_status`,
+    		`auto_pay`,
+    		`add_time`,
+    		`pay_time`,
+			`pay_id`,
+    		`update_time`
+		from nideshop_member_order
+		WHERE 1=1
+		<if test="name != null and name.trim() != ''">
+			AND name LIKE concat('%',#{name},'%')
+		</if>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from nideshop_member_order
+		WHERE 1=1
+        <if test="name != null and name.trim() != ''">
+            AND name LIKE concat('%',#{name},'%')
+        </if>
+	</select>
+	 
+	<insert id="save" parameterType="com.platform.entity.MemberOrderVo" useGeneratedKeys="true" keyProperty="id">
+		insert into nideshop_member_order(
+			`order_no`,
+			`user_id`,
+			`order_status`,
+			`actual_price`,
+			`pay_status`,
+			`auto_pay`,
+			`add_time`,
+			`pay_time`,
+			`pay_id`,
+			`update_time`,
+			`member_card_id`
+			)
+		values(
+			#{orderNo},
+			#{userId},
+			#{orderStatus},
+			#{actualPrice},
+			#{payStatus},
+			#{autoPay},
+			#{addTime},
+			#{payTime},
+			#{payId},
+			#{updateTime},
+			#{cardId}
+			)
+	</insert>
+	 
+	<update id="update" parameterType="com.platform.entity.MemberOrderVo">
+		update nideshop_member_order 
+		<set>
+			<if test="orderNo != null">`order_no` = #{orderNo}, </if>
+			<if test="userId != null">`user_id` = #{userId}, </if>
+			<if test="orderStatus != null">`order_status` = #{orderStatus}, </if>
+			<if test="actualPrice != null">`actual_price` = #{actualPrice}, </if>
+			<if test="payStatus != null">`pay_status` = #{payStatus}, </if>
+			<if test="autoPay != null">`auto_pay` = #{autoPay}, </if>
+			<if test="addTime != null">`add_time` = #{addTime}, </if>
+			<if test="payTime != null">`pay_time` = #{payTime}, </if>
+			<if test="payId != null">`pay_id` = #{payId}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from nideshop_member_order where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from nideshop_member_order where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

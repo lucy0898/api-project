@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiUserMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.UserVo" id="userMap">
+        <result property="userId" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="gender" column="gender"/>
+        <result property="birthday" column="birthday"/>
+        <result property="register_time" column="register_time"/>
+        <result property="last_login_time" column="last_login_time"/>
+        <result property="last_login_ip" column="last_login_ip"/>
+        <result property="user_level_id" column="user_level_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="mobile" column="mobile"/>
+        <result property="register_ip" column="register_ip"/>
+        <result property="avatar" column="avatar"/>
+        <result property="weixin_openid" column="weixin_openid"/>
+        <result property="is_member" column="is_member"/>
+        <result property="inspire_time" column="inspire_time"/>
+        <result property="expire_time" column="expire_time"/>
+        <result property="member_card_id" column="member_card_id"/>
+        <result property="waste_money" column="waste_money"/>
+        <result property="union_id" column="union_id"/>
+        <result property="app_weixin_openid" column="app_weixin_openid"/>
+    </resultMap>
+
+    <select id="queryObject" resultMap="userMap">
+		select id,username,password,gender,birthday,register_time,last_login_time,last_login_ip,user_level_id,nickname,mobile,register_ip,avatar,weixin_openid,is_member,inspire_time,expire_time,member_card_id,waste_money from nideshop_user where id = #{value}
+	</select>
+
+    <select id="queryByOpenId" resultMap="userMap">
+        select id,username,password,gender,birthday,register_time,last_login_time,last_login_ip,user_level_id,nickname,mobile,register_ip,avatar,weixin_openid  from nideshop_user
+        where 1 = 1
+        <if test="openId != null">
+            and `weixin_openid` = #{openId}
+        </if>
+    </select>
+
+    <select id="queryList" resultMap="userMap">
+        select id,username,password,gender,birthday,register_time,last_login_time,last_login_ip,user_level_id,nickname,mobile,register_ip,avatar,weixin_openid  from nideshop_user
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int">
+		select count(id) from nideshop_user
+	</select>
+
+    <insert id="save" parameterType="com.platform.entity.UserVo" useGeneratedKeys="true" keyProperty="userId">
+		insert into nideshop_user
+		(
+			`username`, 
+			`password`, 
+			`gender`, 
+			`birthday`, 
+			`register_time`, 
+			`last_login_time`, 
+			`last_login_ip`, 
+			`user_level_id`, 
+			`nickname`, 
+			`mobile`, 
+			`register_ip`, 
+			`avatar`, 
+			`weixin_openid`,
+			`referrer_id`,
+			`union_id`,
+			`app_weixin_openid`
+
+		)
+		values
+		(
+			#{username}, 
+			#{password}, 
+			#{gender}, 
+			#{birthday}, 
+			#{register_time},
+			#{last_login_time},
+			#{last_login_ip},
+			#{user_level_id},
+			#{nickname},
+			#{mobile},
+			#{register_ip},
+			#{avatar},
+			#{weixin_openid},
+			#{referrer_id},
+			#{union_id},
+			#{app_weixin_openid}
+		)
+	</insert>
+
+    <update id="update" parameterType="com.platform.entity.UserVo">
+        update nideshop_user
+        <set>
+            <if test="username != null">`username` = #{username},</if>
+            <if test="password != null">`password` = #{password},</if>
+            <if test="gender != null">`gender` = #{gender},</if>
+            <if test="birthday != null">`birthday` = #{birthday},</if>
+            <if test="register_time != null">`register_time` = #{register_time},</if>
+            <if test="last_login_time != null">`last_login_time` = #{last_login_time},</if>
+            <if test="last_login_ip != null">`last_login_ip` = #{last_login_ip},</if>
+            <if test="user_level_id != null">`user_level_id` = #{user_level_id},</if>
+            <if test="nickname != null">`nickname` = #{nickname},</if>
+            <if test="mobile != null">`mobile` = #{mobile},</if>
+            <if test="register_ip != null">`register_ip` = #{register_ip},</if>
+            <if test="avatar != null">`avatar` = #{avatar},</if>
+            <if test="weixin_openid != null">`weixin_openid` = #{weixin_openid},</if>
+            <if test="member_card_id != null">`member_card_id` =  #{member_card_id},</if>
+            <if test="expire_time != null">`expire_time` =  #{expire_time},</if>
+            <if test="inspire_time != null">`inspire_time` = #{inspire_time},</if>
+            <if test="is_member != null">`is_member` = #{is_member},</if>
+            <if test="waste_money != null">`waste_money` = waste_money + #{waste_money}</if>
+            <if test="app_weixin_openid != null">`app_weixin_openid` =  #{app_weixin_openid}</if>
+        </set>
+        where id = #{userId}
+    </update>
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.SmsLogVo" id="smslogMap">
+        <result property="id" column="id"/>
+        <result property="user_id" column="user_id"/>
+        <result property="phone" column="phone"/>
+        <result property="log_date" column="log_date"/>
+        <result property="sms_code" column="sms_code"/>
+        <result property="send_status" column="send_status"/>
+        <result property="sms_text" column="sms_text"/>
+    </resultMap>
+
+    <select id="querySmsCodeByUserId" resultMap="smslogMap">
+        select
+        a.id,
+        a.user_id,
+        a.phone,
+        a.log_date,
+        a.sms_code,
+        a.send_status,
+        a.sms_text
+        from nideshop_sms_log a
+        left join nideshop_sms_log b on a.user_id = b.user_id and b.log_date > a.log_date
+        where a.user_id = #{user_id} and b.id is null
+    </select>
+
+    <insert id="saveSmsCodeLog" parameterType="com.platform.entity.SmsLogVo">
+        insert into nideshop_sms_log(
+        `id`,
+        `user_id`,
+        `phone`,
+        `log_date`,
+        `sms_code`,
+        `send_status`,
+        `sms_text`)
+        values(
+        #{id},
+        #{user_id},
+        #{phone},
+        #{log_date},
+        #{sms_code},
+        #{send_status},
+        #{sms_text}
+        )
+    </insert>
+
+    <select id="getUserInfo" resultType="map">
+       SELECT u.is_member,u.expire_time,u.inspire_time,u.waste_money,m.name
+       from nideshop_user u left join nideshop_member_card m on u.member_card_id = m.id
+       where 1=1
+       <if test="userId!=null">
+          and u.id=#{userId}
+       </if>
+    </select>
+
+    <update id="updateUserInfo" parameterType="map">
+        update nideshop_user
+        <set>
+            <if test="member_card_id != null">`member_card_id` =  #{member_card_id},</if>
+            <if test="expire_time != null">`expire_time` =  #{expire_time},</if>
+            <if test="inspire_time != null">`inspire_time` = #{inspire_time},</if>
+            <if test="is_member != null">`is_member` = #{is_member},</if>
+            <if test="waste_money != null">`waste_money` = waste_money + #{waste_money},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="queryByUnionId" resultMap="userMap">
+        select id,username,password,gender,birthday,register_time,last_login_time,last_login_ip,user_level_id,nickname,mobile,register_ip,avatar,weixin_openid,union_id  from nideshop_user
+        where 1 = 1
+        <if test="_parameter!= null">
+            and `union_id` = #{union_id}
+        </if>
+    </select>
+</mapper>

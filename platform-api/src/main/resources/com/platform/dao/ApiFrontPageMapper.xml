@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiFrontPageMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.FrontPageVo" id="frontPageMap">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="category" column="category"/>
+        <result property="imgurl" column="imgurl"/>
+        <result property="link" column="link"/>
+        <result property="content" column="content"/>
+        <result property="create_time" column="create_time"/>
+        <result property="enabled" column="enabled"/>
+    </resultMap>
+
+    <select id="queryFirst" resultType="int">
+        select id from nideshop_frontpage limit 1
+    </select>
+
+    <select id="queryMacrosByValue" resultType="int">
+        SELECT id from sys_macro where `value`= #{value}
+    </select>
+
+    <select id="queryObject" resultMap="frontPageMap">
+       select id,`name`,imgurl from nideshop_frontpage where id = #{value}
+    </select>
+
+    <select id="queryList" resultMap="frontPageMap">
+        select
+        <if test="fields != null and fields != ''">
+            ${fields}
+        </if>
+        <if test="fields == null or fields == ''">
+            *
+        </if>
+        from nideshop_frontpage
+        where enabled = #{enabled}
+        <if test="name != null and name != ''">
+            and 'name' like concat('%',#{name},'%')
+        </if>
+        <if test="category != null and category != ''">
+            and category = #{category}
+        </if>
+
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by id asc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int">
+		select count(id) from nideshop_frontpage where enabled=0
+	</select>
+
+</mapper>

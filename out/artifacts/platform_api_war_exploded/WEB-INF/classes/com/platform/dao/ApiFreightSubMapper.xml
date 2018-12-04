@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiFreightSubMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.FreightSubVo" id="freightSubMap">
+        <result property="id" column="id"/>
+        <result property="freightId" column="freight_id"/>
+        <result property="provinceId" column="province_id"/>
+        <result property="cityId" column="city_id"/>
+        <result property="areaId" column="area_id"/>
+        <result property="submaxunitLimit" column="sub_max_unit_limit"/>
+        <result property="submaxamountLimit" column="sub_max_amount_limit"/>
+        <result property="subperunitPlus" column="sub_per_unit_plus"/>
+        <result property="subperamountPlus" column="sub_per_amount_plus"/>
+    </resultMap>
+
+
+    <select id="queryObject" resultMap="freightSubMap">
+		select freightId,provinceId,cityId,areaId,submaxunitLimit,submaxamountLimit,subperunitPlus,subperamountPlus from nideshop_freight_sub where id = #{id}
+	</select>
+
+    <select id="queryList" resultMap="freightSubMap">
+        select
+        <if test="fields != null and fields != ''">
+            ${fields}
+        </if>
+        <if test="fields == null or fields == ''">
+           *
+        </if>
+        from nideshop_freight_sub
+        where 1 = 1
+        <if test="freightId != null ">
+            and freight_id = #{freightId}
+        </if>
+        <if test="cityId != null ">
+            and city_id = #{cityId}
+        </if>
+        <if test="areaId != null ">
+            and area_id = #{districtId}
+        </if>
+        <if test="provinceId != null ">
+            and province_id = #{provinceId}
+        </if>
+
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by id asc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+
+    <select id="queryTotal" resultType="int">
+		select count(id) from nideshop_freight_sub where enabled=0
+	</select>
+
+
+
+</mapper>

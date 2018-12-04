@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiFrontPageSubMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.GoodsVo" id="goodsMap">
+        <result property="id" column="id"/>
+        <result property="category_id" column="category_id"/>
+        <result property="name" column="name"/>
+        <result property="goods_number" column="goods_number"/>
+        <result property="goods_brief" column="goods_brief"/>
+        <result property="list_pic_url" column="list_pic_url"/>
+        <result property="retail_price" column="retail_price"/>
+    </resultMap>
+
+    <resultMap type="com.platform.entity.FrontPageSubVo" id="frontPageSubMap">
+        <result property="id" column="id"/>
+        <result property="fid" column="fid"/>
+        <result property="gid" column="gid"/>
+    </resultMap>
+
+    <select id="queryObject" resultMap="frontPageSubMap">
+		select  id,fid,gid from nideshop_frontpage_sub where id = #{value}
+	</select>
+
+    <select id="checkAvailabelInsert" resultType="int">
+		select count(id) from nideshop_frontpage_sub where fid = #{fid} and  gid = #{gid}
+	</select>
+
+    <select id="queryByFid" resultMap="goodsMap">
+        select
+        <if test="fields != null and fields != ''">
+            ${fields}
+        </if>
+        <if test="fields == null or fields == ''">
+            b.id,b.category_id,b.`name`,b.goods_number,b.goods_brief,b.list_pic_url,b.retail_price
+        </if>
+        from nideshop_frontpage_sub a
+        left join nideshop_goods b on a.gid = b.id
+        where a.fid = #{fid}
+
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by b.id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int">
+		select count(id) from nideshop_frontpage_sub
+	</select>
+
+    <select id="queryCountByFid" resultType="int">
+		select count(id) from nideshop_frontpage_sub where fid=#{fid}
+	</select>
+
+    <insert id="save" parameterType="com.platform.entity.FrontPageSubVo" useGeneratedKeys="true" keyProperty="id">
+		insert into nideshop_frontpage_sub
+		(
+			`fid`,
+			`gid`
+		)
+		values
+		(
+			#{fid},
+			#{gid}
+		)
+	</insert>
+
+    <update id="update" parameterType="com.platform.entity.FrontPageSubVo">
+        update nideshop_frontpage_sub
+        <set>
+            <if test="fid != null">`fid` = #{fid},</if>
+            <if test="gid != null">`gid` = #{gid},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+		delete from nideshop_frontpage_sub where id = #{value}
+	</delete>
+
+    <delete id="deleteBatch">
+        delete from nideshop_frontpage_sub where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

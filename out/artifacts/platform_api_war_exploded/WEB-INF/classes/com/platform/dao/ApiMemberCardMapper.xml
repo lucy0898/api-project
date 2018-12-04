@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiMemberCardMapper">
+
+    <resultMap type="com.platform.entity.MemberCardVo" id="memberCardMap">
+        <result property="id" column="id"/>
+        <result property="actualPrice" column="actual_price"/>
+        <result property="origPrice" column="orig_price"/>
+        <result property="description" column="description"/>
+        <result property="name" column="name"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.platform.entity.MemberCardVo">
+		select
+			`id`,
+			`actual_price`,
+			`orig_price`,
+			`description`,
+			`name`
+		from nideshop_member_card
+		where id = #{id}
+	</select>
+
+	<select id="queryList" resultType="com.platform.entity.MemberCardVo">
+		select
+    		`id`,
+    		`actual_price`,
+    		`orig_price`,
+    		`description`,
+    		`name`
+		from nideshop_member_card
+		WHERE 1=1
+		<if test="name != null and name.trim() != ''">
+			AND name LIKE concat('%',#{name},'%')
+		</if>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from nideshop_member_card
+		WHERE 1=1
+        <if test="name != null and name.trim() != ''">
+            AND name LIKE concat('%',#{name},'%')
+        </if>
+	</select>
+	 
+	<insert id="save" parameterType="com.platform.entity.MemberCardVo" useGeneratedKeys="true" keyProperty="id">
+		insert into nideshop_member_card(
+			`actual_price`,
+			`orig_price`,
+			`description`,
+			`name`)
+		values(
+			#{actualPrice},
+			#{origPrice},
+			#{description},
+			#{name})
+	</insert>
+	 
+	<update id="update" parameterType="com.platform.entity.MemberCardVo">
+		update nideshop_member_card 
+		<set>
+			<if test="actualPrice != null">`actual_price` = #{actualPrice}, </if>
+			<if test="origPrice != null">`orig_price` = #{origPrice}, </if>
+			<if test="description != null">`description` = #{description}, </if>
+			<if test="name != null">`name` = #{name}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from nideshop_member_card where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from nideshop_member_card where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

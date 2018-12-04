@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.platform.dao.ApiOrderAfterSalesMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.platform.entity.OrderAfterSalesVo" id="orderAfterSalesMap">
+        <result property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="orderSn" column="order_sn"/>
+        <result property="userId" column="user_id"/>
+        <result property="orderUserName" column="order_username"/>
+        <result property="createOrderTime" column="create_order_time"/>
+        <result property="refundTime" column="refund_time"/>
+        <result property="refundDesc" column="refund_desc"/>
+        <result property="orderPrice" column="order_price"/>
+        <result property="refundPrice" column="refund_price"/>
+        <result property="isGoodsReceived" column="is_goods_received"/>
+        <result property="refundStatus" column="refund_status"/>
+        <result property="sellerId" column="seller_id"/>
+        <result property="refundOperator" column="refund_operator"/>
+        <result property="refundOperatedTime" column="refund_operated_time"/>
+        <result property="goodsReceivedOperator" column="goods_received_operator"/>
+        <result property="goodsReceivedOperatedTime" column="goods_received_operated_time"/>
+        <result property="refundSn" column="refund_sn"/>
+    </resultMap>
+
+    <select id="queryObject" resultType="com.platform.entity.OrderAfterSalesVo">
+		select id,order_id,order_sn,user_id,order_username,create_order_time,refund_time,refund_desc,order_price,refund_price,is_goods_received,refund_status,seller_id,refund_operator,refund_operated_time,goods_received_operator,goods_received_operated_time,refund_sn
+        from nideshop_order_aftersales
+        where id = #{id}
+	</select>
+
+    <select id="queryList" resultType="com.platform.entity.OrderAfterSalesVo">
+        select id,order_id,order_sn,user_id,order_username,create_order_time,refund_time,refund_desc,order_price,refund_price,is_goods_received,refund_status,seller_id,refund_operator,refund_operated_time,goods_received_operator,goods_received_operated_time,refund_sn
+        from nideshop_order_aftersales
+        where 1=1
+        <if test="orderSn != null and orderSn.trim() != ''">
+            AND order_sn LIKE concat('%',#{orderSn},'%')
+        </if>
+        <if test="sellerId != null">
+            AND seller_id = #{sellerId}
+        </if>
+        <if test="userId != null">
+            AND user_id = #{userId}
+        </if>
+        <if test="isGoodsReceived != null">
+            AND is_goods_received = #{isGoodsReceived}
+        </if>
+        <if test="refundStatus != null">
+            AND refund_status = #{refundStatus}
+        </if>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+            <otherwise>
+                order by id desc
+            </otherwise>
+        </choose>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="queryTotal" resultType="int">
+        select count(id) from nideshop_order_aftersales WHERE 1=1
+        <if test="orderSn != null and orderSn.trim() != ''">
+            AND order_sn LIKE concat('%',#{orderSn},'%')
+        </if>
+        <if test="sellerId != null">
+            AND seller_id = #{sellerId}
+        </if>
+        <if test="userId != null">
+            AND user_id = #{userId}
+        </if>
+
+        <if test="orderStatus != null and orderStatus.trim() != ''">
+            AND order_status = #{orderStatus}
+        </if>
+    </select>
+
+    <insert id="save" parameterType="com.platform.entity.OrderAfterSalesVo" useGeneratedKeys="true" keyProperty="id">
+		insert into nideshop_order_aftersales
+		(
+			`order_id`,
+			`order_sn`,
+			`user_id`,
+			`order_username`,
+			`create_order_time`,
+			`refund_time`,
+			`refund_desc`,
+			`order_price`,
+			`refund_price`,
+			`is_goods_received`,
+			`refund_status`,
+			`seller_id`,
+			`refund_operator`,
+			`refund_operated_time`,
+			`goods_received_operator`,
+			`goods_received_operated_time`,
+			`refund_sn`
+		)
+		values
+		(
+			#{orderId},
+			#{orderSn},
+			#{userId},
+			#{orderUserName},
+			#{createOrderTime},
+			#{refundTime},
+			#{refundDesc},
+			#{orderPrice},
+			#{refundPrice},
+			#{isGoodsReceived},
+			#{refundStatus},
+			#{sellerId},
+			#{refundOperator},
+			#{refundOperatedTime},
+			#{goodsReceivedOperator},
+			#{goodsReceivedOperatedTime},
+			#{refundSn}
+		)
+	</insert>
+
+    <update id="update" parameterType="com.platform.entity.OrderAfterSalesVo">
+        update nideshop_order_aftersales
+        <set>
+            <if test="orderId != null">`order_id` = #{orderId},</if>
+            <if test="orderSn != null">`order_sn` = #{orderSn},</if>
+            <if test="userId != null">`user_id` = #{userId},</if>
+            <if test="orderUserName != null">`order_username` = #{orderUserName},</if>
+            <if test="createOrderTime != null">`create_order_time` = #{createOrderTime},</if>
+            <if test="refundTime != null">`refund_time` = #{refundTime},</if>
+            <if test="refundDesc != null">`refund_desc` = #{refundDesc},</if>
+            <if test="orderPrice != null">`order_price` = #{orderPrice},</if>
+            <if test="refundPrice != null">`refund_price` = #{refundPrice},</if>
+            <if test="isGoodsReceived != null">`is_goods_received` = #{isGoodsReceived},</if>
+            <if test="refundStatus != null">`refund_status` = #{refundStatus},</if>
+            <if test="sellerId != null">`seller_id` = #{sellerId},</if>
+            <if test="refundOperator != null">`refund_operator` = #{refundOperator},</if>
+            <if test="refundOperatedTime != null">`refund_operated_time` = #{refundOperatedTime},</if>
+            <if test="goodsReceivedOperator != null">`goods_received_operator` = #{goodsReceivedOperator},</if>
+            <if test="goodsReceivedOperatedTime != null">`goods_received_operated_time` = #{goodsReceivedOperatedTime},</if>
+            <if test="refundSn != null">`refund_sn` = #{refundSn}</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+		delete from nideshop_order_aftersales where id = #{value}
+	</delete>
+
+    <delete id="deleteBatch">
+        delete from nideshop_order_aftersales where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+
+</mapper>
